@@ -19,6 +19,7 @@ export const request = async (req:Request, res: Response, next: NextFunction) =>
     try{
       verify = jwt.verify( headers['authorization'].replace('Bearer ', '') , config.jwt)
     } catch (error) { 
+      console.log(error)
     }
     if(!verify?.user){
       const error = responseUtility.error('unauthorize', null, { code: 401})

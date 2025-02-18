@@ -22,7 +22,7 @@ const LeadSchema = new Schema({
   interestProgram: {type: Schema.Types.ObjectId, ref: 'Program'},
   status:{
     type: Schema.Types.String,
-    enum: ['active', 'inactive'],
+    enum: ['active', 'inactive', 'dropped'],
     default: 'active'
   },
   trackings: [

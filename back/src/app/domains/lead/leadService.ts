@@ -33,6 +33,11 @@ class LeadService {
       
       let last_tracking = _params?.trackings?.[_params?.trackings?.length - 1]
       if(last_tracking?.new){
+        const newTracking = await Tracking.create({
+          name: "New Tracking",
+          description: "Description of the new tracking"
+        });
+        last_tracking.tracking = newTracking._id;
         const tracking = await Tracking.findOne({_id: last_tracking.tracking}).lean()
         if(tracking?.target_status){
           _params.status = tracking.target_status
@@ -53,6 +58,10 @@ class LeadService {
           object: lead
         })
       } else {
+        // Add incremental property
+        const lastLead = await Lead.findOne().sort({ incremental: -1 }).lean();
+        _params.incremental = lastLead ? lastLead.incremental + 1 : 1;
+
         const create = await Lead.create(_params)
         const lead = create.toObject()
         

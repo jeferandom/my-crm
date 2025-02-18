@@ -2,21 +2,12 @@ import { app } from "@/atoms/kuepa"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { leadService } from "@/services/leadService"
+import { LeadData } from "@/services/leadService"
 
 export interface LeadsProps {
 }
 
 export default function Leads(props?: LeadsProps) {
-
-  const [formData, setFormData] = useState({
-    full_name: '',
-    first_name: '',
-    last_name: '',
-    email: '',
-    mobile_phone: '',
-    interestProgram: '',
-    status: 'active'
-  });
 
   const DummyPrograms = [
     {
@@ -29,7 +20,19 @@ export default function Leads(props?: LeadsProps) {
     }
   ]
 
+  const [formData, setFormData] = useState({
+    full_name: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    mobile_phone: '',
+    interestProgram: DummyPrograms[0]._id,
+    status: 'active'
+  });
+
   const [trackings, setTrackings] = useState([{ tracking: '', description: '', new: true, name: '' }]);
+  const [leads, setLeads] = useState<LeadData[]>([]);
+  const [reload, setReload] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, index?: number) => {
     const { name, value } = e.target;
@@ -39,7 +42,7 @@ export default function Leads(props?: LeadsProps) {
       setTrackings(newTrackings);
     } if ( name.startsWith('new') ) {
       const newTrackings = [...trackings];
-      newTrackings[index!][name] = value == 'on' || false;
+      newTrackings[index]['new'] = !newTrackings[index]['new'];
       setTrackings(newTrackings);
     } else {
       setFormData({
@@ -55,6 +58,17 @@ export default function Leads(props?: LeadsProps) {
       const response = await leadService.create({ ...formData, trackings });
       if (response) {
         alert('Lead creado exitosamente');
+        setReload(true); // Set reload flag to true
+        setFormData({
+          full_name: '',
+          first_name: '',
+          last_name: '',
+          email: '',
+          mobile_phone: '',
+          interestProgram: '',
+          status: 'active'
+        });
+        setTrackings([{ tracking: '', description: '', new: true, name: '' }]);
       } else {
         alert('Error al crear el lead: ' + response);
       }
@@ -80,9 +94,28 @@ export default function Leads(props?: LeadsProps) {
       ]
     })
   }, [])
+
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        const leadsList = await leadService.getAll();
+        setLeads(leadsList);
+      } catch (error) {
+        console.error("Error fetching leads:", error);
+      }
+    };
+
+    fetchLeads();
+  }, [reload]); 
+
+  useEffect(() => {
+    if (reload) {
+      setReload(false); 
+    }
+  }, [reload]);
+
   return (
     <>
-      <h1 className="flex text-4xl font-title text-purple-800">Leads</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Nombre Completo:</label>
@@ -160,6 +193,29 @@ export default function Leads(props?: LeadsProps) {
         </div>
         <button type="submit">Guardar Lead</button>
       </form>
+      <h2 className="flex text-2xl font-title text-purple-800">Lista de Leads</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre Completo</th>
+            <th>Email</th>
+            <th>Teléfono Móvil</th>
+            <th>Programa de Interés</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {leads.map((lead) => (
+            <tr key={lead._id}>
+              <td>{lead.full_name}</td>
+              <td>{lead.email}</td>
+              <td>{lead.mobile_phone}</td>
+              <td>{DummyPrograms.find(program => program._id === lead.interestProgram)?.name || "N/A"}</td>
+              <td>{lead.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   )
 }

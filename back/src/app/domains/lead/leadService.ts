@@ -272,18 +272,18 @@ class LeadService {
       
       let leads = await Lead.find(where)
       .sort({created_at:-1})
-      .populate({
-        path: 'contact',
-        select: 'first_name last_name document number',
-        options: { lean:true }
-      })
+      // .populate({
+      //   path: 'contact',
+      //   select: 'first_name last_name document number',
+      //   options: { lean:true }
+      // })
       .limit(100)
       .lean()
       
-      leads = leads.map(_l=>{
-        _l.full_name = `${_l.contact?.first_name} ${_l.contact?.last_name}`.trim()
-        return _l
-      })
+      // leads = leads.map(_l=>{
+      //   _l.full_name = `${_l.contact?.first_name} ${_l.contact?.last_name}`.trim()
+      //   return _l
+      // })
       
       return responseUtility.success({
         list:leads

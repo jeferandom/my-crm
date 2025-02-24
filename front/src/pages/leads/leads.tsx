@@ -30,6 +30,8 @@ export default function Leads(props?: LeadsProps) {
     email: '',
     mobile_phone: '',
     interestProgram: DummyPrograms[0]._id,
+    address: '',
+    city: '',
     status: 'active'
   });
 
@@ -65,6 +67,8 @@ export default function Leads(props?: LeadsProps) {
           email: '',
           mobile_phone: '',
           interestProgram: '',
+          address: '',
+          city: '',
           status: 'active'
         });
         setTrackings([{ tracking: '', description: '', new: true, name: '' }]);
@@ -228,6 +232,40 @@ export default function Leads(props?: LeadsProps) {
                   ))}
                 </select>
               </div>
+            </Form.Field>
+            <Form.Field className="FormField" name="address">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Form.Label className="FormLabel">Dirección</Form.Label>
+                <Form.Message className="FormMessage" match="valueMissing">
+                  Por favor ingrese su dirección
+                </Form.Message>
+              </div>
+              <Form.Control asChild>
+                <input className="Input" type="text" name="address" value={formData.address} onChange={handleChange} required />
+              </Form.Control>
+            </Form.Field>
+            <Form.Field className="FormField" name="city">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Form.Label className="FormLabel">Ciudad</Form.Label>
+                <Form.Message className="FormMessage" match="valueMissing">
+                  Por favor ingrese su ciudad
+                </Form.Message>
+              </div>
+              <Form.Control asChild>
+                <input className="Input" type="text" name="city" value={formData.city} onChange={handleChange} required />
+              </Form.Control>
             </Form.Field>
             <Form.Field className="FormField" name="status">
               <div

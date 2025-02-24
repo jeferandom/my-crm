@@ -10,6 +10,8 @@ export interface LeadData {
   email: string;
   mobile_phone: string;
   interestProgram: string;
+  address: string;
+  city: string;
   status?: "active" | "inactive";
   trackings?: Array<{
     tracking: string;
